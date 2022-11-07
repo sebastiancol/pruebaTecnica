@@ -1,5 +1,5 @@
 window.addEventListener('load', () =>{
-    //setInterval("location.reload()",20000);
+    
     apiRequest()
 });
 
@@ -38,48 +38,33 @@ function dataApi(data){
     price_max.append(data.price_max)
 
     const description = document.getElementById('description');
-    description.append(data.description)
-
+    description.innerHTML = `<p>${data.description} </p>`
+    
     const fotos = data.images
     //console.log(fotos)
     fotos.forEach(f => {
-        const card= document.createElement('div')
-        card.className="cards"
-
+       
         const img= document.createElement('img');
-        img.src=fotos.images
-        img.width=
+        img.src=f.images;                   
+        document.getElementById('images').append(img)
         
-        card.append(img)
-        const photos=document.getElementById('images').append(card)
-        //document.getElementById('info2').append(card)
-
     });
-   
+
     //<p>${data.variants}</p>
 
     const variants = data.variants
     let info= []
     variants.forEach(f =>{
         const options= document.createElement('option')
+        options.value=f.options
         info.push(options)
-        options.value=f.option1
-        const select =document.getElementById('options').appendChild(options);
+        //const option2= document.createElement('option')
+        ///option2.value=f.option2
+        document.getElementById('options').appendChild(options);
     })
     //console.log(variants)
 
-    /*let img1= document.createElement('img'); 
-    img1.src= data.images[0]
-    let img2= document.createElement('img'); 
-    img2.src= data.images[1] 
-    let img3= document.createElement('img'); 
-    img3.src= data.images[2]
-    let img4= document.createElement('img'); 
-    img4.src= data.images[3]
-    let photos = [];
-    photos.push(data.images[0],data.images[1],data.images[2],data.images[3])*/
-    
-    
+      
     
 }
 
@@ -88,13 +73,14 @@ function errorApi(){
     console.log('error en la api')
 }  
 
+/*
 const variants = document.getElementById('variants');
 variants.addEventListener('submit', (event)=>{
     event.preventDefault();
-})
+})*/
 
 
-const modal = document.getElementById('agregar');
+/*const modal = document.getElementById('agregar');
 //modal.addEventListener('click',modalWindow)
 
 async function modalWindow(){
@@ -110,7 +96,7 @@ function modalInfo(){
 
 function errorModal(){
     console.log('error en el modal')
-}
+}*/
 
 
     if(document.getElementById("btnModal")){
@@ -136,7 +122,7 @@ function errorModal(){
         }
     
         window.onclick = function(event) {
-            if (event.target == modal) {
+            if (event.target == modal2) {
                 modal2.style.display = "none";
     
                 body.style.position = "inherit";
