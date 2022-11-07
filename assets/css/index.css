@@ -1,52 +1,156 @@
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
+
 body {
-    margin: 0;
-    padding: 0;
     font-family: 'Muli', sans-serif;
-    height: 100%;
+    min-height: 100%;
     min-width: 100vw;
     min-height: 100vh;
-   
+    overflow-x: hidden;
+    
 }
-
 
 
 .container{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    grid-template-rows: auto ;
+    height: 100%;
+    margin: auto;
+    max-width: 1000px ;
+    column-gap: 20px;
+    justify-content: space-around;
+    
 }
 
+.subContainer1{
+    display: grid;
+    grid-column: auto;
+    height: 150px;
+    width: 200px;
+}
 
+.subContainer2{
+    display: grid;
+    grid-gap: 30 px;
+    justify-content: space-around;
+    align-items: space-around;
+    align-content: space-between;
+    /*width: 100%;
+    row-gap: 20px;*/
+}
+
+.content{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: space-around;
+    align-content: space-between;
+    width: auto;
+}
 
 img {
-    width: auto;
     height: auto;
+    width: auto;
 }
 
 .imagen{
-    display: grid;
-    grid-auto-columns: auto;
-    grid-row: auto;
-    background-color: gray;
+   display: grid;
+   grid-row: auto;
+   width: auto;
+   
+}
+.carrosuel{
+    width: 80%;
+    max-width: 120en;
+    min-width: 10em;
 }
 
+.carrosuel .main{
+    width: 400%;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    transition: all .5s ease;
+    transform: translateX(-25%);
+}
+.carrosuel #images{
+    width: calc(100% /4);
+    min-height: 100vh;
+}
+
+.carrosuel .points{
+    width: 100%;
+    padding: 1em;
+
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.carrosuel .point{
+    width: 2em;
+    height: 2em;
+    margin: 1em; 
+    background-color: #aaaaaa;
+}
+
+.carrosuel .point .active{
+
+}
+
+li{
+    list-style: square;
+    color: #aaaaaa ;
+}
+
+ul{
+    list-style: none;
+}
+/*
 .description{
     display: grid;
     grid-row: auto;
     border-color: blue;
+    justify-content: space-between;
+    width: 100%;
 }
 
-.title{
-    text-align: center;
+.price{
+    display: grid;
+    grid-row: auto;
 }
 
+.priceMax{
+    display: grid;
+    grid-row: auto;
+}
 
+.variants{
+    display: grid;
+    grid-row: auto;
+}*/
 
-/*
+/*estilo header de color*/
+header{
+    background-color:#03abb3;   
+}
+
+/*estilo footer de color*/
+footer{
+    height: 100%;
+    background-color: black;   
+}
+
+/*estilo de modal*/
+
 .modalContainer {
     display: none; 
     position: fixed; 
@@ -83,32 +187,31 @@ img {
     text-decoration: none;
     cursor: pointer;
 }
-*/
-
-header{
-    display: grid;
-    grid-template-columns: auto;
-    background-color:#03abb3;   
-}
-
-footer{
-    display: grid;
-    grid-template-columns: auto;
-    background-color: black;
-   
-}
-
 
 @media screen and (max-width: 250px) {
     
-    body {
+    .container {
+        height: 80%;
         display: flex;
-        justify-content: left;
-        align-items: left;
-        flex-wrap: wrap;
-        flex-direction: row;
+        flex-direction: column;
+        justify-items: center;
+        justify-content: center;
+        align-items: center;        
         min-width: 100vw;
         min-height: 100vh;
     }
 }
 
+
+/*@media screen and (min-width: 500px) and ( max-widht: 750)  {
+    
+    .container {
+        display: grid;
+        grid-template-columns: auto auto auto auto;
+        justify-items: left;
+        justify-content: center;
+        align-items: left;        
+        min-width: 100vw;
+        min-height: 100vh;
+    }
+}*/
