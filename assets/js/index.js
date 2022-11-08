@@ -1,155 +1,231 @@
-'use strict'
-
 window.onload = () => {
-    apiRequest();
+    getData();
+    const elem = document.querySelector('.carousel');
+    new Flickity(elem, {
+        imagesLoaded: true,
+        percentPosition: false,
+        draggable: false,
+        freeScroll: true,
+        wrapAround: true,
+        autoPlay: true
+    });
 }
 
-function apiRequest() {
-    //console.log('entrando')
-    // en este funcion usamos fetch para enlazar la api
+const productData = {};
+
+function getData() {
+    ///funcion que trae la data del api
     fetch('https://graditest-store.myshopify.com/products/free-trainer-3-mmw.js')
         .then(response => response.json())
         .then(data => {
-            dataApi(data);
+            console.log(data);
+            drawComponents(data);
         })
-        .catch(errorApi)
+        .catch(err => console.error(err));
 }
 
+function drawComponents(data) {
+    const { title, price_max, compare_at_price, options, media, description } = data;
 
-function dataApi(data) {
+    const header = document.querySelector('#header');
+    header.innerHTML = getHeaderComponent(title, price_max, compare_at_price);
 
-    //en esta funcion damos manejos a los datos obtenidos de la api
+    const carousel = document.querySelector('#carousel');
+    const images = media.map(m => m.src);
+    carousel.innerHTML = getCarousel(images);
 
-    /* ok nombre
-    okprecio real
-    ok precio mas alto %
-    ok descripcion
-    ok galeria de imagenes
-    ok variantes del prpoducto (s/m/l) y su respectivo precio*/
+    const color = document.querySelector('#color');
+    const colors = options.filter(option => option.name === 'Color');
+    color.innerHTML = getColorComponent(colors);
 
-    //aca traemos el valor del nombre
-    const name = document.getElementById('title');
-    name.append(data.title)
+    const size = document.querySelector('#size');
+    const sizes = options.filter(option => option.name === 'Size');
+    size.innerHTML = getSizeComponent(sizes);
 
-    //aca traemos el valor del precio
-    const price = document.getElementById('price');
-    price.append(data.price)
+    const price = document.querySelector('#price');
+    price.innerHTML = getPriceComponent(price_max);
 
-    //aca traemos el precio maximo
-    const price_max = document.getElementById('preciHigh');
-    price_max.append(data.price_max)
+    document.querySelector('#buttons').innerHTML = getButtonsComponent();
+    document.getElementById('favoriteBtn').addEventListener('click', addFavorite);
+    document.getElementById('cartBtn').addEventListener('click', addCart);
 
-    //aca traemos el valor de la descipcion del producto
-    const description = document.getElementById('description');
-    description.innerHTML = `<p>${data.description} </p>`
+    document.querySelectorAll('.dot').forEach(el => {
+        el.addEventListener('click', evt => {
+            const { target } = evt;
+            const backgroundColor = window.getComputedStyle(target, null).getPropertyValue('background-color');
+            target.style.border = '2px solid black';
+            productData['color'] = backgroundColor;
+        });
+    });
 
-    const images = data.media.map(m => m.src);
-    let imageTemplate = '';
+    document.querySelectorAll('.square').forEach(el => {
+        el.addEventListener('click', evt => {
+            const { target } = evt;
+            const size = target.innerText;
+            target.style.border = '2px solid black';
+            target.style.fontWeight = 'bold';
+            target.style.color = 'black';
+            productData['size'] = size;
+        });
+    });
 
-    images.forEach(url => {
-        imageTemplate += `
-            <img  src='${url}'/>
+    document.querySelector('#description').innerHTML = description;
+}
+
+function getCarousel(images) {
+    //funcion que trae las imagenes
+    let template = '';
+
+    images.forEach(src => {
+        template += `
+            <img src='${src}' />
         `;
     });
 
-    document.getElementById('images').innerHTML = imageTemplate;
+    return template;
+}
+
+/**componente del header */
+
+function getHeaderComponent(title, price_max, compare_at_price) {
+    return `
+        <h1 class='header-title'>${title}</h1>
+        <span class='price-max'>$${getFormattedPrice(price_max)}</span>
+        <span class='compare-at-price'>$${getFormattedPrice(compare_at_price)}</span>
+        <hr/>
+    `;
+}
+
+function getFormattedPrice(price) {
+    return (price / 100).toFixed(2);
+}
+
+/**End Header Component */
 
 
-    //aca traemos la informacion de las variantes del producto
-    const variants = data.variants;
-    let variantsTemplate = '';
+/**Color Component */
 
-    variants.forEach(f => {
-        variantsTemplate += `
-            <option value=${f.id}>${f.name}</option>
+function getColorComponent(colors) {
+    const [{ name, values }] = colors;
+    let template = `<span class='color-text'>${name}: </span>`;
+
+    values.forEach(color => {
+        template += `
+            <span class="dot" style='background-color: ${color.toLowerCase()}'></span>
         `;
     });
 
-    document.getElementById('options').innerHTML = variantsTemplate;
-
-
-
+    return `
+        ${template}
+        <hr />
+    `;
 }
 
-function errorApi(err) {
-    //funcionn de error si la api falla
-    console.error('error en la api: ', err)
+/**End Color Component */
+
+
+/**Size Component */
+
+function getSizeComponent(sizes) {
+    const [{ name, values }] = sizes;
+    let template = `<span class='size-text'>${name}: </span>`;
+
+    values.forEach(size => {
+        template += `
+            <span class="square">${size}</span>
+        `;
+    });
+
+    return `
+        ${template}
+        <hr />
+    `;
 }
 
-/*
-const variants = document.getElementById('variants');
-variants.addEventListener('submit', (event)=>{
-    event.preventDefault();
-})*/
+/**End Size Component */
 
 
-/*const modal = document.getElementById('agregar');
-//modal.addEventListener('click',modalWindow)
+/**Price Component */
 
-async function modalWindow(){
-    await fetch('/assets/views/modal.html')
-    .then(modalInfo)
-    .catch(errorModal)
+function getPriceComponent(price_max) {
+    return `
+        <div class="counter">
+            <span class="down" onClick='decreaseCount(event, this, ${price_max})'>-</span>
+            <input type="text" value="1" id="counter-value">
+            <span class="up" onClick='increaseCount(event, this, ${price_max})'>+</span>
+        </div>
+        <div>
+            <span style="color: #ccc; font-weight: bold">
+                Total Price: <span id='total-price' style="color: #555">
+                    ${getTotalPrice(1, price_max)}
+                </span>
+            </span>
+        </div>
+    `;
 }
 
-function modalInfo(){
-    console.log('modal ok')
-}
+function decreaseCount(event, element, price_max) {
+    const input = document.getElementById('counter-value');
+    const totalPrice = document.getElementById('total-price');
+    let value = parseInt(input.value, 10);
 
-
-function errorModal(){
-    console.log('error en el modal')
-}*/
-
-//acciones de la ventana modal
-if (document.getElementById("btnModal")) {
-    let modal2 = document.getElementById("myModal");
-    let btn = document.getElementById("btnModal");
-    let span = document.getElementsByClassName("close")[0];
-    let body = document.getElementsByTagName("body")[0];
-
-    btn.onclick = function () {
-        modal2.style.display = "block";
-
-        body.style.position = "static";
-        body.style.height = "100%";
-        body.style.overflow = "hidden";
-    }
-
-    span.onclick = function () {
-        modal2.style.display = "none";
-
-        body.style.position = "inherit";
-        body.style.height = "auto";
-        body.style.overflow = "visible";
-    }
-
-    window.onclick = function (event) {
-        if (event.target == modal2) {
-            modal2.style.display = "none";
-
-            body.style.position = "inherit";
-            body.style.height = "auto";
-            body.style.overflow = "visible";
-        }
+    if (value > 1) {
+        value = isNaN(value) ? 0 : value;
+        value--;
+        input.value = value;
+        totalPrice.innerHTML = getTotalPrice(input.value, price_max);
     }
 }
 
-//aca esta la funcionalida del carrosuel
-const main = document.querySelector('.main')
-const point = document.querySelectorAll('.point')
+function increaseCount(event, element, price_max) {
+    const input = document.getElementById('counter-value');
+    const totalPrice = document.getElementById('total-price');
+    let value = parseInt(input.value, 10);
+    value = isNaN(value) ? 0 : value;
+    value++;
+    input.value = value;
+    totalPrice.innerHTML = getTotalPrice(input.value, price_max);
+}
 
-point.forEach((eachPoint, i) => {
-    point[i].addEventListener('click', () => {
-        let position = i;
-        let operation = position * -25
+function getTotalPrice(value, price) {
+    return `$ ${((value * price) / 100)}`;
+}
 
-        main.style.transform = `translateX(${operation}%)`
+/**End Price Component */
 
-        point.forEach((eachPoint, i) => {
-            point[i].classList.remove('active');
-        })
-        point[i].classList.add('active');
-    })
-});
+/**Buttons Component */
+
+function getButtonsComponent() {
+    return `
+        <button class="favorite" id="favoriteBtn">Add to favorite</button>
+        <button class="cart" id="cartBtn">Add to cart</button>
+    `;
+}
+
+function addFavorite(evt) {
+    evt.preventDefault();
+    alert('Add to favorite');
+
+}
+
+function addCart(evt) {
+    evt.preventDefault();
+    if (JSON.stringify(productData) !== '{}') {
+        alert(`
+            Color: ${productData.color}
+            Size: ${productData.size}
+        `);
+    } else {
+        alert('Product no selected.')
+    }
+}
+
+/**End Buttons Component */
+
+
+
+
+
+
+
 
