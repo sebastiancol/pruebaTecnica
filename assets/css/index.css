@@ -95,13 +95,40 @@ body {
     flex-direction: row;
     justify-content: space-around;
     margin-top: 20px;
+
+    gap: 1.5em;
+    max-width: 200px;
+    height: 100px;
+    justify-content: space-around;
+    align-items: center;
+    cursor:auto;
+    overflow:auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    margin: auto;
+    border-radius: 40px;
 }
 
-/*imagen del carrousel*/
-.carousel img {
-    display: block;
-    height: 105px;
+.carousel::-webkit-scrollbar{
+    display: none;
 }
+
+
+
+/*imagen del carrousel*/
+.carousel .img {
+    display: grid;   
+    scroll-snap-align: center;
+    padding: 100px;
+    border-radius: 10px;
+    color: white;
+    width: 50%;
+    height: 100px;
+    margin-right: 10px;    
+    border-radius: 5px;
+   
+}
+
 
 .container {
     width: 50%;
@@ -188,5 +215,6 @@ footer{
     .carousel img {
         height: 50px;
     }
+   
 }
 
